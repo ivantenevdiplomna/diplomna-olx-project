@@ -1,0 +1,123 @@
+
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+   
+  }
+  
+  .dropdown-content {
+    margin-top: 20px;
+
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f1f1f1;
+   
+    min-width: 318px;
+    /* box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); */
+  
+    z-index: 1;
+  }
+  
+  .dropdown-content p {
+    font-size: 14px;
+    
+
+    text-decoration: none;
+    margin: 10px;
+    display: block;
+  }
+
+  .dropdown:hover .dropdown-content {display: block;}
+ 
+  #dropdown-account{
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    
+    
+  }
+  #dropdown-account-content{
+    position: absolute;
+    display: none;
+    /* border: 1px solid black; */
+    border-radius: 10px;
+   
+    height: auto;
+    min-width: 320px;
+    right: 10;
+    margin-top: 4px;
+    padding: 20px;
+    z-index: 10;
+
+  }
+  #dropdown-account:hover #dropdown-account-content{
+    display: block;
+  }
+ 
+ 
+  #menu-dropdown{
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+   margin-top: -1rem;
+  }
+  .menu-dropdown-content{
+    position: absolute;
+    display: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background-color: white;
+    height: auto;
+    top: 10;
+    left: 0;
+    width: 1000px;
+    z-index: 2;
+    cursor: pointer;
+   font-family:sans-serif;
+   font-size: 15px;
+   line-height: 20px;
+  }
+
+ #menu-title{
+   padding: 10px;
+   cursor: pointer;
+  }
+  #menu-title:hover{
+  
+    cursor: pointer;
+
+  }
+
+  #menu-dropdown:hover .menu-dropdown-content{
+    display: block;
+    cursor: pointer;
+  }
+
+  @media only screen and (max-width: 1300px) {
+    #after-top{
+      display: none;
+    }
+    #menu_nav{
+      display: none;
+    }
+    #bottom_nav{
+      display: none;
+    }
+    #mobile_bar{
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 15px;
+      padding-bottom: 15px;
+    }
+  }
+
+  @media only screen and (min-width: 1301px) {
+    #mobile_bar{
+      display: none
+    };
+  }
