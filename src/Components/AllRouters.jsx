@@ -5,7 +5,8 @@ import Login from "./Authentication/Login";
 import SignUpForm from "./Authentication/Sign-up-form";
 import ProductDetails from "../Pages/ProductDetails/ProductDetails";
 import AddProduct from "../Pages/AddProduct/AddProduct";
-import AllCategory from "../Pages/AllCategory/AllCategory";
+import Category from "../Pages/Category/Category";
+import Profile from "../Pages/Profile/Profile";
 import PrivateRoute from "./PrivateRoute";
 
 const AllRouters = () => {
@@ -15,12 +16,21 @@ const AllRouters = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/product/:id" element={<ProductDetails />} />
-      <Route path="/category/:category" element={<AllCategory />} />
+      <Route path="/category/:category" element={<Category />} />
+      <Route path="/category/:category/:subcategory" element={<Category />} />
       <Route
         path="/sell"
         element={
           <PrivateRoute>
             <AddProduct />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Profile />
           </PrivateRoute>
         }
       />

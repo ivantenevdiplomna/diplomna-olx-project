@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
     Box,
     Grid,
@@ -22,10 +22,10 @@ import { categories } from '../../config/categories';
 const API_URL = 'http://localhost:5000/api';
 
 const Category = () => {
-    const { category } = useParams();
+    const { category, subcategory } = useParams();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedSubcategory, setSelectedSubcategory] = useState('');
+    const [selectedSubcategory, setSelectedSubcategory] = useState(subcategory || '');
     const [sortBy, setSortBy] = useState('newest');
     const toast = useToast();
 
@@ -36,7 +36,11 @@ const Category = () => {
         const fetchProducts = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`${API_URL}/products/category/${category}`);
+                const url = subcategory 
+                    ? `${API_URL}/products/category/${category}?subcategory=${subcategory}`
+                    : `${API_URL}/products/category/${category}`;
+                
+                const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error('Failed to fetch products');
                 }
@@ -59,7 +63,7 @@ const Category = () => {
         if (category) {
             fetchProducts();
         }
-    }, [category, toast]);
+    }, [category, subcategory, toast]);
 
     const handleSubcategoryChange = (e) => {
         setSelectedSubcategory(e.target.value);
@@ -148,7 +152,7 @@ const Category = () => {
                                 _hover={{ shadow: 'md' }}
                             >
                                 <Image
-                                    src={product.imageUrl}
+                                    src={`http://localhost:5000/${product.image}`}
                                     alt={product.title}
                                     h="200px"
                                     w="100%"
@@ -165,7 +169,12 @@ const Category = () => {
                                         <Badge colorScheme="green" fontSize="md">
                                             ₹{product.price}
                                         </Badge>
-                                        <Button colorScheme="blue" size="sm">
+                                        <Button 
+                                            colorScheme="blue" 
+                                            size="sm"
+                                            as={Link}
+                                            to={`/product/${product._id}`}
+                                        >
                                             View Details
                                         </Button>
                                     </HStack>

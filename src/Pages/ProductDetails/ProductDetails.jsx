@@ -21,11 +21,19 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
 } from '@chakra-ui/react';
 import { MdLocalShipping, MdLocationOn } from 'react-icons/md';
 import { BsCalendarEvent } from 'react-icons/bs';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Components/Context/AuthContext';
+import Chat from '../../Components/Chat/Chat';
+import { useDisclosure } from '@chakra-ui/react';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -37,6 +45,7 @@ const ProductDetails = () => {
   const [comment, setComment] = useState('');
   const [error, setError] = useState(null);
   const borderColor = useColorModeValue('gray.200', 'gray.600');
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -60,7 +69,9 @@ const ProductDetails = () => {
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    if (!user) {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
       toast({
         title: 'Please login',
         description: 'You need to be logged in to comment',
@@ -77,12 +88,23 @@ const ProductDetails = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ text: comment }),
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          toast({
+            title: 'Session expired',
+            description: 'Please login again',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          });
+          navigate('/login');
+          return;
+        }
         throw new Error('Failed to add comment');
       }
 
@@ -181,7 +203,13 @@ const ProductDetails = () => {
               {product.location}
             </Text>
 
-            <Button colorScheme="teal" variant="outline" w="90%" marginTop="10px">
+            <Button 
+              colorScheme="teal" 
+              variant="outline" 
+              w="90%" 
+              marginTop="10px"
+              onClick={onOpen}
+            >
               Chat with seller
             </Button>
           </div>
@@ -295,6 +323,17 @@ const ProductDetails = () => {
           </form>
         </Box>
       </Box>
+
+      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Chat with Seller</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Chat productId={id} onClose={onClose} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Container>
   );
 };

@@ -14,9 +14,11 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
+    const storedUser = localStorage.getItem('user');
+    
+    if (token && storedUser) {
       setIsAuthenticated(true);
-      // You might want to verify the token with your backend here
+      setUser(JSON.parse(storedUser));
     }
     setLoading(false);
   }, []);
@@ -65,6 +67,7 @@ export const AuthContextProvider = ({ children }) => {
     login,
     signup,
     logout,
+    loading
   };
 
   return (

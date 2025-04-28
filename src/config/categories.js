@@ -1,19 +1,10 @@
 export const categories = {
-  mobile: {
-    name: 'Mobile Phones',
-    subcategories: [
-      { value: 'smartphone', label: 'Smartphones' },
-      { value: 'feature-phone', label: 'Feature Phones' },
-      { value: 'tablet', label: 'Tablets' },
-      { value: 'accessories', label: 'Accessories' }
-    ]
-  },
   vehicles: {
     name: 'Vehicles',
     subcategories: [
-      { value: 'car', label: 'Cars' },
-      { value: 'bike', label: 'Bikes' },
-      { value: 'scooter', label: 'Scooters' },
+      { value: 'cars', label: 'Cars' },
+      { value: 'motorcycles', label: 'Motorcycles' },
+      { value: 'scooters', label: 'Scooters' },
       { value: 'commercial', label: 'Commercial Vehicles' },
       { value: 'spare-parts', label: 'Spare Parts' }
     ]
@@ -21,8 +12,8 @@ export const categories = {
   property: {
     name: 'Property',
     subcategories: [
-      { value: 'house', label: 'Houses' },
-      { value: 'apartment', label: 'Apartments' },
+      { value: 'houses', label: 'Houses' },
+      { value: 'apartments', label: 'Apartments' },
       { value: 'land', label: 'Land' },
       { value: 'commercial', label: 'Commercial Property' }
     ]
@@ -30,9 +21,10 @@ export const categories = {
   electronics: {
     name: 'Electronics',
     subcategories: [
-      { value: 'laptop', label: 'Laptops' },
-      { value: 'desktop', label: 'Desktops' },
-      { value: 'camera', label: 'Cameras' },
+      { value: 'mobile-phones', label: 'Mobile Phones' },
+      { value: 'laptops', label: 'Laptops' },
+      { value: 'desktops', label: 'Desktops' },
+      { value: 'cameras', label: 'Cameras' },
       { value: 'tv', label: 'TVs' },
       { value: 'audio', label: 'Audio Devices' }
     ]
@@ -40,52 +32,40 @@ export const categories = {
   fashion: {
     name: 'Fashion',
     subcategories: [
-      { value: 'men', label: "Men's Fashion" },
-      { value: 'women', label: "Women's Fashion" },
-      { value: 'kids', label: "Kids' Fashion" },
+      { value: 'mens-clothing', label: "Men's Clothing" },
+      { value: 'womens-clothing', label: "Women's Clothing" },
+      { value: 'kids-clothing', label: "Kids' Clothing" },
       { value: 'accessories', label: 'Accessories' }
     ]
   },
   home: {
     name: 'Home & Living',
     subcategories: [
-      'Furniture',
-      'Home Decor & Garden',
-      'Kitchen & Dining',
-      'Bedding & Bath',
-      'Tools & DIY',
-      'Other Home Items'
+      { value: 'furniture', label: 'Furniture' },
+      { value: 'home-decor', label: 'Home Decor' },
+      { value: 'kitchen', label: 'Kitchen & Dining' },
+      { value: 'bedding', label: 'Bedding & Bath' },
+      { value: 'tools', label: 'Tools & DIY' }
     ]
   },
   jobs: {
     name: 'Jobs',
     subcategories: [
-      'Full-time Jobs',
-      'Part-time Jobs',
-      'Work from Home',
-      'Internships',
-      'Freelance',
-      'Other Jobs'
+      { value: 'full-time', label: 'Full-time Jobs' },
+      { value: 'part-time', label: 'Part-time Jobs' },
+      { value: 'remote', label: 'Work from Home' },
+      { value: 'internships', label: 'Internships' },
+      { value: 'freelance', label: 'Freelance' }
     ]
   },
   services: {
     name: 'Services',
     subcategories: [
-      'Education & Classes',
-      'Drivers & Taxi',
-      'Health & Beauty',
-      'Home & Office Repair',
-      'Moving & Storage',
-      'Other Services'
-    ]
-  },
-  furniture: {
-    name: 'Furniture',
-    subcategories: [
-      { value: 'sofa', label: 'Sofas' },
-      { value: 'bed', label: 'Beds' },
-      { value: 'dining', label: 'Dining Sets' },
-      { value: 'office', label: 'Office Furniture' }
+      { value: 'education', label: 'Education & Classes' },
+      { value: 'transport', label: 'Drivers & Taxi' },
+      { value: 'beauty', label: 'Health & Beauty' },
+      { value: 'repair', label: 'Home & Office Repair' },
+      { value: 'moving', label: 'Moving & Storage' }
     ]
   }
 };
@@ -99,8 +79,5 @@ export const getMainCategories = () => {
 
 export const getSubcategories = (mainCategory) => {
   if (!mainCategory || !categories[mainCategory]) return [];
-  return categories[mainCategory].subcategories.map(subcategory => ({
-    value: subcategory.value,
-    label: subcategory.label
-  }));
+  return categories[mainCategory].subcategories;
 }; 

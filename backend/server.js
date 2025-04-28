@@ -2,8 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const authRoutes = require('./routes/auth');
-const productRoutes = require('./routes/products');
 const path = require('path');
 const fs = require('fs');
 
@@ -31,9 +29,17 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/olx-clone
 .then(() => console.log('Connected to MongoDB'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-// Routes
+// Import routes
+const authRoutes = require('./routes/auth');
+const productRoutes = require('./routes/products');
+const chatRoutes = require('./routes/chats');
+const adminRoutes = require('./routes/admin');
+
+// Register routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/chats', chatRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Basic route for testing
 app.get('/', (req, res) => {

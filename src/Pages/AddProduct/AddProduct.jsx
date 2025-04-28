@@ -28,7 +28,7 @@ const AddProduct = () => {
     price: "",
     category: "",
     subcategory: "",
-    imageUrl: "",
+    image: null,
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -48,7 +48,7 @@ const AddProduct = () => {
     if (file) {
       setFormData((prev) => ({
         ...prev,
-        imageUrl: URL.createObjectURL(file),
+        image: file,
       }));
     }
   };
@@ -63,13 +63,25 @@ const AddProduct = () => {
         throw new Error("Please login to add a product");
       }
 
+      // Validate required fields
+      if (!formData.title || !formData.description || !formData.price || !formData.category || !formData.subcategory || !formData.image) {
+        throw new Error("Please fill in all required fields");
+      }
+
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('price', Number(formData.price));
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('subcategory', formData.subcategory);
+      formDataToSend.append('image', formData.image);
+
       const response = await fetch(`${API_URL}/products`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
 
       if (!response.ok) {
@@ -77,6 +89,8 @@ const AddProduct = () => {
         throw new Error(errorData.message || "Failed to add product");
       }
 
+      const result = await response.json();
+      
       toast({
         title: "Success",
         description: "Product added successfully",

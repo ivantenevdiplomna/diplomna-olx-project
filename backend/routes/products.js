@@ -4,6 +4,7 @@ const Product = require('../models/Product');
 const auth = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
+const User = require('../models/User');
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -16,6 +17,57 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+// Get products by user
+router.get('/user', auth, async (req, res) => {
+    try {
+        console.log('Auth middleware passed, user:', req.user);
+        
+        if (!req.user || !req.user.userId) {
+            console.log('User authentication failed:', req.user);
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        console.log('Fetching products for user:', req.user.userId);
+        
+        // Check if the user ID is valid
+        const userExists = await User.findById(req.user.userId);
+        if (!userExists) {
+            console.log('User not found in database:', req.user.userId);
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        const products = await Product.find({ seller: req.user.userId })
+            .populate('seller', 'name email')
+            .sort('-createdAt');
+            
+        console.log('Found products:', products.length);
+        res.json(products);
+    } catch (error) {
+        console.error('Error in /user route:', error);
+        console.error('Error stack:', error.stack);
+        res.status(500).json({ 
+            message: 'Error fetching user products', 
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+});
+
+// Get a single product
+router.get('/:id', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id)
+            .populate('seller', 'name email phoneNumber')
+            .populate('comments.user', 'name email');
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.json(product);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching product', error: error.message });
+    }
+});
 
 // Get all products with pagination and filtering
 router.get('/', async (req, res) => {
@@ -52,7 +104,14 @@ router.get('/', async (req, res) => {
 router.get('/category/:category', async (req, res) => {
     try {
         const { category } = req.params;
-        const products = await Product.find({ category })
+        const { subcategory } = req.query;
+        
+        const query = { category };
+        if (subcategory) {
+            query.subcategory = subcategory;
+        }
+
+        const products = await Product.find(query)
             .populate('seller', 'name email phoneNumber')
             .populate('comments.user', 'name email')
             .sort('-createdAt');
@@ -62,25 +121,10 @@ router.get('/category/:category', async (req, res) => {
     }
 });
 
-// Get a single product
-router.get('/:id', async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id)
-            .populate('seller', 'name email phoneNumber')
-            .populate('comments.user', 'name email');
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
-        }
-        res.json(product);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching product', error: error.message });
-    }
-});
-
 // Create a new product
 router.post('/', auth, upload.single('image'), async (req, res) => {
     try {
-        const { title, description, price, category } = req.body;
+        const { title, description, price, category, subcategory } = req.body;
         
         if (!req.file) {
             return res.status(400).json({ message: 'Image is required' });
@@ -91,6 +135,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
             description,
             price,
             category,
+            subcategory,
             image: req.file.path,
             seller: req.user.userId
         });

@@ -9,7 +9,8 @@ import ProductHouse from "../../Pages/Products/ProductHouse";
 import ProductMobiles from "../../Pages/Products/ProductMobiles";
 import AllProducts from "../../Pages/Products/AllProducts";
 import SearchProducts from "../../Pages/Products/SearchProducts";
-
+import AdminDashboard from "../../components/AdminDashboard";
+import AdminRoute from "../AdminRoute";
 import AddProducts from "../../Pages/Products/AddProducts";
 import Login from "../Authentication/Login";
 
@@ -31,6 +32,14 @@ function AllRouters() {
       <Route path="/login" element={<Login />} />
       <Route path="/ProductDetails/:id" element={<ProductDetails />} />
       <Route path="/all_category" element={<SearchProducts />}></Route>
+      <Route 
+        path="/admin" 
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        } 
+      />
     </Routes>
   );
 }

@@ -37,9 +37,12 @@ import {
 } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Components/Context/AuthContext";
+import { getMainCategories, getSubcategories } from "../../config/categories";
+import ChatInbox from "../Chat/ChatInbox.jsx";
 
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
+  const { isOpen: isChatOpen, onOpen: onChatOpen, onClose: onChatClose } = useDisclosure();
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth();
 
@@ -113,6 +116,7 @@ export default function WithSubnavigation() {
                 icon={<ChatIcon />}
                 variant="ghost"
                 aria-label="Messages"
+                onClick={onChatOpen}
               />
               <Menu>
                 <MenuButton
@@ -125,8 +129,8 @@ export default function WithSubnavigation() {
                   <Avatar size={"sm"} />
                 </MenuButton>
                 <MenuList>
-                  <MenuItem>Profile</MenuItem>
-                  <MenuItem>My Ads</MenuItem>
+                  <MenuItem as={Link} to="/profile">Profile</MenuItem>
+                  <MenuItem as={Link} to="/sell">My Ads</MenuItem>
                   <MenuDivider />
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 </MenuList>
@@ -165,6 +169,8 @@ export default function WithSubnavigation() {
       <Collapse in={isOpen} animateOpacity>
         <MobileNav />
       </Collapse>
+
+      <ChatInbox isOpen={isChatOpen} onClose={onChatClose} />
     </Box>
   );
 }
@@ -218,40 +224,60 @@ const DesktopNav = () => {
   );
 };
 
-const DesktopSubNav = ({ label, href, subLabel }) => {
+const DesktopSubNav = ({ label, href, subLabel, children }) => {
+  const hoverBg = useColorModeValue("blue.50", "gray.900");
+  const iconColor = useColorModeValue("blue.400", "blue.400");
+
   return (
-    <ChakraLink
-      href={href}
-      role={"group"}
-      display={"block"}
-      p={2}
-      rounded={"md"}
-      _hover={{ bg: useColorModeValue("blue.50", "gray.900") }}
-    >
-      <Stack direction={"row"} align={"center"}>
-        <Box>
-          <Text
+    <Box>
+      <ChakraLink
+        href={href}
+        role={"group"}
+        display={"block"}
+        p={2}
+        rounded={"md"}
+        _hover={{ bg: hoverBg }}
+      >
+        <Stack direction={"row"} align={"center"}>
+          <Box>
+            <Text
+              transition={"all .3s ease"}
+              _groupHover={{ color: iconColor }}
+              fontWeight={500}
+            >
+              {label}
+            </Text>
+            <Text fontSize={"sm"}>{subLabel}</Text>
+          </Box>
+          <Flex
             transition={"all .3s ease"}
-            _groupHover={{ color: "blue.400" }}
-            fontWeight={500}
+            transform={"translateX(-10px)"}
+            opacity={0}
+            _groupHover={{ opacity: "100%", transform: "translateX(0)" }}
+            justify={"flex-end"}
+            align={"center"}
+            flex={1}
           >
-            {label}
-          </Text>
-          <Text fontSize={"sm"}>{subLabel}</Text>
-        </Box>
-        <Flex
-          transition={"all .3s ease"}
-          transform={"translateX(-10px)"}
-          opacity={0}
-          _groupHover={{ opacity: "100%", transform: "translateX(0)" }}
-          justify={"flex-end"}
-          align={"center"}
-          flex={1}
-        >
-          <Icon color={"blue.400"} w={5} h={5} as={ChevronRightIcon} />
-        </Flex>
-      </Stack>
-    </ChakraLink>
+            <Icon color={iconColor} w={5} h={5} as={ChevronRightIcon} />
+          </Flex>
+        </Stack>
+      </ChakraLink>
+      {children && (
+        <Stack pl={4} mt={2} spacing={1}>
+          {children.map((child) => (
+            <ChakraLink
+              key={child.label}
+              href={child.href}
+              p={2}
+              rounded={"md"}
+              _hover={{ bg: hoverBg }}
+            >
+              <Text fontSize={"sm"}>{child.label}</Text>
+            </ChakraLink>
+          ))}
+        </Stack>
+      )}
+    </Box>
   );
 };
 
@@ -325,18 +351,15 @@ const MobileNavItem = ({ label, children, href }) => {
 const NAV_ITEMS = [
   {
     label: "Categories",
-    children: [
-      {
-        label: "Cars",
-        subLabel: "Find your dream car",
-        href: "/category/cars",
-      },
-      {
-        label: "Bikes",
-        subLabel: "Find your perfect ride",
-        href: "/category/bikes",
-      },
-    ],
+    children: getMainCategories().map(category => ({
+      label: category.label,
+      subLabel: `Browse ${category.label}`,
+      href: `/category/${category.value}`,
+      children: getSubcategories(category.value).map(subcategory => ({
+        label: subcategory.label,
+        href: `/category/${category.value}/${subcategory.value}`
+      }))
+    }))
   },
   {
     label: "Sell",
